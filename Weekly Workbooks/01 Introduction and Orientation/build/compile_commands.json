@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/CanvasPoint.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/CanvasPoint.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/CanvasPoint.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/CanvasPoint.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/CanvasTriangle.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/CanvasTriangle.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/CanvasTriangle.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/CanvasTriangle.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/Colour.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/Colour.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/Colour.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/Colour.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/DrawingWindow.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/DrawingWindow.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/DrawingWindow.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/DrawingWindow.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/ModelTriangle.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/ModelTriangle.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/ModelTriangle.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/ModelTriangle.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/RayTriangleIntersection.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/RayTriangleIntersection.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/RayTriangleIntersection.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/RayTriangleIntersection.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/TextureMap.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/TextureMap.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/TextureMap.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/TextureMap.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/TexturePoint.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/TexturePoint.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/TexturePoint.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/TexturePoint.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/libs/sdw/Utils.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/Utils.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw/Utils.cpp",
+  "output": "CMakeFiles/RedNoise.dir/libs/sdw/Utils.cpp.o"
+},
+{
+  "directory": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.32.10/include -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/glm-0.9.7.2\" -I\"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/libs/sdw\" -isystem /opt/homebrew/Cellar/sdl2/2.32.10/include/SDL2 -g -std=gnu++14 -arch arm64 -Wall -Wextra -Wcast-align -Wfatal-errors -Werror=return-type -Wno-unused-parameter -Wno-unused-variable -Wno-ignored-attributes -O2 -fno-omit-frame-pointer -g -o CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o -c \"/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/src/RedNoise.cpp\"",
+  "file": "/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/RedNoise/src/RedNoise.cpp",
+  "output": "CMakeFiles/RedNoise.dir/src/RedNoise.cpp.o"
+}
+]
