@@ -54,6 +54,46 @@ For example, the image below shows the renderer part way through rendering the t
 
 <img src="part-raked.png" height="240px">.
 
+### Single Pixel Rendering
+
+Let's imagine that your Ray Tracer produces the render shown in the diagram below, and you wish to fix the "notch" that
+cuts into the blue box.
+
+<img src="broken-render.jpg" height="240px">.
+
+The issue is *probably* an error calculating intersections. The problem is however, that it is impractical to print
+ALL variables (assuming a 320x240 image plane, that would be 77k pixels !). Even with careful structuring or labelling
+of output, the volume of printed data will be hard to manage.
+
+One helpful solution to this problem is to just focus on a SINGLE pixel - and only print out details of THAT pixel.
+Pick a pixel that is "misbehaving" and focus on that. The easiest way to determine the coordinates of a particular pixel
+is to add the following code to your renderer to print out click location, then just click on the require pixel to
+identify its location.
+
+```
+if (event.type == SDL_MOUSEBUTTONDOWN) {
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    std::cout << mouseX << "," << mouseY << std:endl;
+}
+```
+
+You can then use this pixel coordinate to constrain the main loop in your rendering code, so that only a single pixel is drawn.
+You can then print out a whole range of information, safe in the knowledge that it all relates to that one single pixel.
+For example, you could "Interrogate" the value of all of the following key variables:
+
+- All "possible solution" intersections that are found
+- The colour of each intersected triangle
+- 3D position of all intersection points
+- Distances from the camera to each intersection point
+- The intersection that was identified as the "closest"
+- The distance from each intersection point to light source
+- Shadow ray intersections (surfaces that cast shadow)
+- Brightness from Proximity, AoI, Specular etc for a point
+- etc.
+
+Everything is a LOT easier to interpret, if you are just dealing with a single pixel !
+
 ### "Visual" Debugging
 This approach involves encoding numerical data as visual attributes of the rendered image. In particular,
 you can use pixel colour to visually present key attributes of a model. For example, the following render ignores
