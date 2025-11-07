@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // 使用 "shell" 类型来运行 'make'
+            "type": "shell",
+
+            // 保持这个标签不变, 因为 launch.json (调试配置)
+            // 很可能在寻找这个名字来作为 "preLaunchTask"
+            "label": "C/C++: clang++ build active file",
+            
+            // 要运行的命令
+            "command": "make",
+
+            // 'make' 不需要参数, 因为 Makefile 知道该做什么
+            "args": [],
+
+            // 关键: 设置 "当前工作目录" (cwd)
+            // 到你的 Makefile 所在的文件夹
+            "options": {
+                "cwd": "${workspaceFolder}/extras/RedNoise"
+            },
+
+            // 帮助 VS Code 理解来自 'make' 的错误信息
+            "problemMatcher": [
+                "$gcc"
+            ],
+
+            // 将此标记为默认的构建任务
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

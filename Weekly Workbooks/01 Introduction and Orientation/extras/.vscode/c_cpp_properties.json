@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                
+                // 1. 告诉 IntelliSense 在哪里找到 "CanvasTriangle.h"
+                "${workspaceFolder}/RedNoise/libs/sdw",
+                
+                // 2. 告诉 IntelliSense 在哪里找到 "SDL.h"
+                // (这是 Apple Silicon Mac 上 Homebrew 的默认路径)
+                "/opt/homebrew/include/SDL2"
+
+                // (如果你用的是 Intel Mac，请使用下面这行)
+                // "/usr/local/include/SDL2"
+            ],
+            "defines": [],
+            "macFrameworkPath": [],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-x64"
+        }
+    ],
+    "version": 4
+}

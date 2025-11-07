@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug RedNoise (lldb)",
+            "type": "lldb",
+            "request": "launch",
+            "preLaunchTask": "Build RedNoise Project",
+            "program": "${workspaceFolder}/RedNoise/build/RedNoise",
+            "cwd": "${workspaceFolder}/RedNoise",
+            "args": []
+        }
+    ]
+}

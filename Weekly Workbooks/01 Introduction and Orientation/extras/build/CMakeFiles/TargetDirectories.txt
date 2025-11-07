@@ -1,0 +1,3 @@
+/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/build/CMakeFiles/RedNoise.dir
+/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/build/CMakeFiles/edit_cache.dir
+/Users/liuchenxing/Documents/CG2025/Weekly Workbooks/01 Introduction and Orientation/extras/build/CMakeFiles/rebuild_cache.dir
