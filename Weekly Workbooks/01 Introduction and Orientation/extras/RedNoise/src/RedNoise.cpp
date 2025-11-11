@@ -2,10 +2,13 @@
 #include <DrawingWindow.h>
 #include "CanvasPoint.h"
 #include "Colour.h"
+#include "ModelTriangle.h"
 #include "TextureMap.h"
 #include <Utils.h>
 #include <algorithm>
 #include <fstream>
+#include <map>
+#include <string>
 #include <vector>
 
 #define WIDTH 320
@@ -17,49 +20,88 @@ std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle);
 void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
 void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
+std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours);
+std::map<std::string, Colour> loadMtl(const std::string& pathfile);
+
+std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours){
+	std::vector<glm::vec3> vertices;
+	std::vector<ModelTriangle> triangles;
+	std::ifstream file(pathfile);
+	if (!file.is_open()) {
+		std::cerr << "Error: Could not open file " << pathfile << std::endl;
+		return triangles;
+	}
+
+	Colour currentColour = Colour(255, 255, 255);
+
+	std::string line;
+	while(std::getline(file, line)){
+		std::vector<std::string> tokens = split(line, ' ');
+		if(tokens.empty()) continue;
+
+		if(tokens[0] == "v"){
+			float x = std::stof(tokens[1]) * scale;
+			float y = std::stof(tokens[2]) * scale;
+			float z = std::stof(tokens[3]) * scale;
+			vertices.push_back(glm::vec3(x, y, z));
+		}
+		else if(tokens[0] == "f"){
+			int v1Index = std::stoi(split(tokens[1], '/')[0]);
+			int v2Index = std::stoi(split(tokens[2], '/')[0]);
+			int v3Index = std::stoi(split(tokens[3], '/')[0]);
+			glm::vec3 v1 = vertices[v1Index - 1];
+			glm::vec3 v2 = vertices[v2Index - 1];
+			glm::vec3 v3 = vertices[v3Index - 1];
+			triangles.push_back(ModelTriangle(v1, v2, v3, currentColour));
+		}
+		else if (tokens[0] == "usemtl"){
+			std::string material = tokens[1];
+			if(colours.count(material)){
+				currentColour = colours[material];
+			}
+			else{
+				std::cerr << "Warning: Material " << material << " not found in MTL file. Using default colour." << std::endl;
+			}
+		}
+	}
+	file.close();
+	std::cout << "Loaded " << triangles.size() << " triangles from " << pathfile << std::endl;
+	return triangles;
+}
+
+std::map<std::string, Colour> loadMtl(const std::string& pathfile){
+	std::map<std::string, Colour> colours;
+	std::ifstream file(pathfile);
+	std::vector<std::string> tokens;
+	if (!file.is_open()) {
+		std::cerr << "Error: Could not open file " << pathfile << std::endl;
+		return colours;
+	}
+
+	std::string line;
+	std::string currentMaterial;
+	while(std::getline(file, line)){
+		tokens = split(line, ' ');
+		if(tokens.empty()) continue;
+		if(tokens[0] == "newmtl"){
+			currentMaterial = tokens[1];
+			continue;
+		}
+		if(tokens[0] == "Kd"){
+			int red = static_cast<int>(std::stoi(tokens[1]) * 255.0f);
+			int green = static_cast<int>(std::stoi(tokens[2]) * 255.0f);
+			int blue = static_cast<int>(std::stoi(tokens[3]) * 255.0f);
+			colours[currentMaterial] = Colour(red, green, blue);
+		}
+	}
+	file.close();
+	std::cout << "Loaded " << colours.size() << " colours from " << pathfile << std::endl;
+	return colours;
+}
 
 void draw(DrawingWindow &window) {
 	window.clearPixels();
-	/*auto leftStartList = interpolateThreeElementValues(
-		glm::vec3(255.0, 0.0, 0.0),
-		glm::vec3(255.0, 255.0, 0.0),
-		window.height);
-	auto rightStartList = interpolateThreeElementValues(
-		glm::vec3(0.0, 0.0, 255.0),
-		glm::vec3(0.0, 255.0, 0.0),
-		window.height);
 	
-	for (size_t y = 0; y < window.height; y++) {
-		auto ColurList = interpolateThreeElementValues(
-			leftStartList[y],
-			rightStartList[y],
-			window.width);
-		for (size_t x = 0; x < window.width; x++) {
-			float red = ColurList[x][0];
-			float green = ColurList[x][1];
-			float blue = ColurList[x][2];
-			uint32_t colour = (255 << 24) + (int(red) << 16) + (int(green) << 8) + int(blue);
-			window.setPixelColour(x, y, colour);
-		}
-	}*/
-		glm::vec3 v0 = glm::vec3(255.0, 0.0, 0.0);
-		glm::vec3 v1 = glm::vec3(0.0, 255.0, 0.0);
-		glm::vec3 v2 = glm::vec3(0.0, 0.0, 255.0);
-
-		for (size_t y = 0; y < window.height; y++) {
-			for (size_t x = 0; x < window.width; x++) {
-				auto pointWeight = convertToBarycentricCoordinates(
-					glm::vec2(0, window.height - 1),
-					glm::vec2(window.width/2, 0),
-					glm::vec2(window.width -1, window.height -1),
-					glm::vec2(x, y)
-				);
-				if (pointWeight.x < 0 || pointWeight.y < 0 || pointWeight.z < 0) continue;
-				glm::vec3 pointColour = pointWeight.x * v1 + pointWeight.y * v2 + pointWeight.z * v0;
-				uint32_t colour = (255 << 24) + (int(pointColour.x) << 16) + (int(pointColour.y) << 8) + int(pointColour.z);
-				window.setPixelColour(x, y, colour);
-			}
-	}
 }
 
 void drawLine (DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
@@ -176,11 +218,11 @@ std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle){
 	float yDiffTotal = vertices[2].y - vertices[0].y;
 	float yDiffMid = vertices[1].y - vertices[0].y;
 	
-	float du_dv = (vertices[2].texturePoint.x - vertices[0].texturePoint.x) / yDiffTotal;
-	float dv_du = (vertices[2].texturePoint.y - vertices[0].texturePoint.y) / yDiffTotal;
+	float du_rate = (vertices[2].texturePoint.x - vertices[0].texturePoint.x) / yDiffTotal;
+	float dv_rate = (vertices[2].texturePoint.y - vertices[0].texturePoint.y) / yDiffTotal;
 
-	float textureU = vertices[0].texturePoint.x + (yDiffMid * du_dv);
-	float textureV = vertices[0].texturePoint.y + (yDiffMid * dv_du);
+	float textureU = vertices[0].texturePoint.x + (yDiffMid * du_rate);
+	float textureV = vertices[0].texturePoint.y + (yDiffMid * dv_rate);
 	
 	CanvasPoint newPoint = CanvasPoint(x_target_float, vertices[1].y);
 	newPoint.texturePoint = TexturePoint(textureU, textureV);
@@ -303,7 +345,17 @@ void test() {
 int main(int argc, char *argv[]) {
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
-	test();
+	std::map<std::string, Colour> colours = loadMtl("assets/cornell-box.mtl");
+	std::vector<ModelTriangle> cornellBox = loadObj("assets/cornell-box.obj", 0.35f, colours);
+
+	// 遍历并打印出所有三角形来进行检查
+    std::cout << "--- Printing loaded triangles ---" << std::endl;
+    for (const auto& triangle : cornellBox) {
+        // 这需要 ModelTriangle 类重载了 << 操作符 (Task 1 中提到)
+        std::cout << triangle << std::endl; 
+    }
+    std::cout << "--- End of triangle list ---" << std::endl;
+	
 	while (true) {
 		// We MUST poll for events - otherwise the window will freeze !
 		if (window.pollForInputEvents(event)) handleEvent(event, window);
