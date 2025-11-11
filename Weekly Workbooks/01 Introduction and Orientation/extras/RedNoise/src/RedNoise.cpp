@@ -102,7 +102,7 @@ void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const 
 
 void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture){
 	CanvasPoint p1 = (triangle[1].x < triangle[2].x) ? triangle[1] : triangle[2];
-	CanvasPoint p2 = (triangle[1].x > triangle[2].x) ? triangle[1] : triangle[2];
+	CanvasPoint p2 = (triangle[1].x >= triangle[2].x) ? triangle[1] : triangle[2];
 
 	if (triangle.v1().y - triangle.v0().y == 0 || triangle.v2().y - triangle.v0().y == 0) {
         return; 
@@ -126,12 +126,11 @@ void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, 
 				glm::vec2(triangle.v2().x, triangle.v2().y),
 				glm::vec2(x, y)
 			);
-			if (weights.x < 0 || weights.y < 0 || weights.z < 0) continue;
 			float u = weights.x * vT1.x + weights.y * vT2.x + weights.z * vT0.x;
 			float v = weights.x * vT1.y + weights.y * vT2.y + weights.z * vT0.y;
 			int u_int = round(u);
 			int v_int = round(v);
-			if(u_int >= 0 && u_int < texture.width && v_int >= 0 && v_int < texture.height){
+			if(u_int >= 0 && u_int < static_cast<int>(texture.width) && v_int >= 0 && v_int < static_cast<int>(texture.height)){
 				int index = v_int * texture.width + u_int;
 				window.setPixelColour(x, y, texture.pixels[index]);
 			}
