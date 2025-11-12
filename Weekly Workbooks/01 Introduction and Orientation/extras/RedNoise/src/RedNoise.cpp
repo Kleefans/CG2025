@@ -4,6 +4,7 @@
 #include "Colour.h"
 #include "ModelTriangle.h"
 #include "TextureMap.h"
+#include "glm/detail/type_vec.hpp"
 #include <Utils.h>
 #include <algorithm>
 #include <fstream>
@@ -16,12 +17,23 @@
 std::vector<float> interpolateSingleFloats(float, float, int);
 std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 to, int numberOfSteps);
 void drawTask2Test(DrawingWindow &window);
+void drawStrokedTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
 std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle);
 void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
+void drawFilledTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
 void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
 std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours);
 std::map<std::string, Colour> loadMtl(const std::string& pathfile);
+CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 cameraPosition, float focalLength, glm::vec3 vertexPosition, float scaleFactor);
+
+
+std::map<std::string, Colour> colours = loadMtl("assets/cornell-box.mtl");
+std::vector<ModelTriangle> cornellBox = loadObj("assets/cornell-box.obj", 0.35f, colours);
+glm::vec3 cameraPosition(0.0f, 0.0f, 4.0f);
+float focalLength = 2.0f; 
+float scaleFactor = 160.0f;
+std::vector<float> zBuffer(HEIGHT * WIDTH, 0.0f);
 
 std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours){
 	std::vector<glm::vec3> vertices;
@@ -88,9 +100,9 @@ std::map<std::string, Colour> loadMtl(const std::string& pathfile){
 			continue;
 		}
 		if(tokens[0] == "Kd"){
-			int red = static_cast<int>(std::stoi(tokens[1]) * 255.0f);
-			int green = static_cast<int>(std::stoi(tokens[2]) * 255.0f);
-			int blue = static_cast<int>(std::stoi(tokens[3]) * 255.0f);
+			int red = static_cast<int>(std::stof(tokens[1]) * 255.0f);
+			int green = static_cast<int>(std::stof(tokens[2]) * 255.0f);
+			int blue = static_cast<int>(std::stof(tokens[3]) * 255.0f);
 			colours[currentMaterial] = Colour(red, green, blue);
 		}
 	}
@@ -101,8 +113,24 @@ std::map<std::string, Colour> loadMtl(const std::string& pathfile){
 
 void draw(DrawingWindow &window) {
 	window.clearPixels();
-	
-}
+
+	for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            zBuffer[y * WIDTH + x] = 0.0f;
+        }
+    }
+
+	for (const ModelTriangle& triangle : cornellBox){
+		std::array<glm::vec3, 3> vertices = {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
+		CanvasPoint p0 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[0], scaleFactor);
+		CanvasPoint p1 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[1], scaleFactor);
+		CanvasPoint p2 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[2], scaleFactor);
+		CanvasTriangle canvasTriangle(p0, p1, p2);
+		drawFilledTriangle(window, canvasTriangle, triangle.colour);
+	}
+}     
+
+
 
 void drawLine (DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
 	float dx = to.x - from.x;
@@ -131,7 +159,6 @@ void drawFilledTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour c
 	for (auto subTriangle : subTriangles) {
 		drawFilledTriangleWorker(window, subTriangle, colour);
 	}
-	drawStrokedTriangle(window, triangle, Colour(255,255,255));
 }
 
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture){
@@ -161,6 +188,10 @@ void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, 
 	for (int y = round(yTop); y <= round(yBottom); y++){
 		float x1 = triangle.v0().x + (y - triangle.v0().y) * dx_dy_1;
 		float x2 = triangle.v0().x + (y - triangle.v0().y) * dx_dy_2;
+		if (x1 > x2) {
+            std::swap(x1, x2);
+			std::swap(vT1, vT2);
+        }
 		for (int x = round(x1); x <= round(x2); x++) {
 			glm::vec3 weights = convertToBarycentricCoordinates(
 				glm::vec2(triangle.v0().x, triangle.v0().y),
@@ -190,16 +221,50 @@ void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Co
 
 	float dx_dy_1 = (p1.x - triangle.v0().x) / (p1.y - triangle.v0().y);
 	float dx_dy_2 = (p2.x - triangle.v0().x) / (p2.y - triangle.v0().y);
+
+	float dDepth_dy_1 = (p1.depth - triangle.v0().depth) / (p1.y - triangle.v0().y);
+    float dDepth_dy_2 = (p2.depth - triangle.v0().depth) / (p2.y - triangle.v0().y);
+
 	float yTop = std::min(triangle.v0().y, std::max(triangle.v1().y, triangle.v2().y));
 	float yBottom = std::max(triangle.v0().y, std::min(triangle.v1().y, triangle.v2().y));
 	for (int y = round(yTop); y <= round(yBottom); y++){
 		float x1 = triangle.v0().x + (y - triangle.v0().y) * dx_dy_1;
 		float x2 = triangle.v0().x + (y - triangle.v0().y) * dx_dy_2;
+
+		float depth1 = triangle.v0().depth + (y - triangle.v0().y) * dDepth_dy_1;
+		float depth2 = triangle.v0().depth + (y - triangle.v0().y) * dDepth_dy_2;
+
+		if (x1 > x2) {
+            std::swap(x1, x2);
+            std::swap(depth1, depth2);
+        }
+
 		for (int x = round(x1); x <= round(x2); x++) {
-        uint32_t packed = (255 << 24) | (colour.red << 16) | (colour.green << 8) | colour.blue;
-        window.setPixelColour(x, y, packed);
-    }
+			float t = 0.0f;
+            if (x2 - x1 != 0) { 
+                t = (x - x1) / (x2 - x1);
+            }
+			float currentDepth = depth1 + t * (depth2 - depth1);
+        	if(currentDepth > zBuffer[x + y * WIDTH]){
+				zBuffer[x + y * WIDTH] = currentDepth;
+				uint32_t argb = (255 << 24) | (colour.red << 16) | (colour.green << 8) | colour.blue;
+				window.setPixelColour(x, y, argb);
+			}
+    	}
 	}
+}
+
+CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 cameraPosition, float focalLength, glm::vec3 vertexPosition, float imageScaleFactor = 1){
+	glm::vec3 vertexRelativePosition = vertexPosition - cameraPosition;
+	float x = vertexRelativePosition.x;
+	float y = vertexRelativePosition.y;
+	float z = vertexRelativePosition.z;
+	
+	float u = -focalLength * (x / z) * imageScaleFactor + (WIDTH / 2.0f);
+	float v = focalLength * (y / z) * imageScaleFactor + (HEIGHT / 2.0f);
+	float zDepth = 1.0f/-z;
+
+	return CanvasPoint(round(u), round(v), zDepth);
 }
 
 std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle){
@@ -221,10 +286,12 @@ std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle){
 	float du_rate = (vertices[2].texturePoint.x - vertices[0].texturePoint.x) / yDiffTotal;
 	float dv_rate = (vertices[2].texturePoint.y - vertices[0].texturePoint.y) / yDiffTotal;
 
+	float dDepth_rate = (vertices[2].depth - vertices[0].depth) / yDiffTotal;
+
 	float textureU = vertices[0].texturePoint.x + (yDiffMid * du_rate);
 	float textureV = vertices[0].texturePoint.y + (yDiffMid * dv_rate);
 	
-	CanvasPoint newPoint = CanvasPoint(x_target_float, vertices[1].y);
+	CanvasPoint newPoint = CanvasPoint(x_target_float, vertices[1].y, vertices[0].depth + (yDiffMid * dDepth_rate));
 	newPoint.texturePoint = TexturePoint(textureU, textureV);
 
 	CanvasTriangle top = CanvasTriangle(vertices[0], vertices[1], newPoint);
@@ -345,20 +412,11 @@ void test() {
 int main(int argc, char *argv[]) {
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
-	std::map<std::string, Colour> colours = loadMtl("assets/cornell-box.mtl");
-	std::vector<ModelTriangle> cornellBox = loadObj("assets/cornell-box.obj", 0.35f, colours);
-
-	// 遍历并打印出所有三角形来进行检查
-    std::cout << "--- Printing loaded triangles ---" << std::endl;
-    for (const auto& triangle : cornellBox) {
-        // 这需要 ModelTriangle 类重载了 << 操作符 (Task 1 中提到)
-        std::cout << triangle << std::endl; 
-    }
-    std::cout << "--- End of triangle list ---" << std::endl;
 	
 	while (true) {
 		// We MUST poll for events - otherwise the window will freeze !
 		if (window.pollForInputEvents(event)) handleEvent(event, window);
+		draw(window);
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();
 	}
