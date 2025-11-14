@@ -127,10 +127,9 @@ void draw(DrawingWindow &window) {
 		CanvasPoint p2 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[2], scaleFactor);
 		CanvasTriangle canvasTriangle(p0, p1, p2);
 		drawFilledTriangle(window, canvasTriangle, triangle.colour);
+		//drawStrokedTriangle(window, canvasTriangle, Colour(255, 255, 255));
 	}
 }     
-
-
 
 void drawLine (DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
 	float dx = to.x - from.x;
@@ -346,12 +345,7 @@ std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 t
 	return result;
 }
 
-void testInterpolateSingleFloats() {
-	std::vector<float> result;
-	result = interpolateSingleFloats(2.2, 8.5, 7);
-	for(size_t i=0; i<result.size(); i++) std::cout << result[i] << " ";
-	std::cout << std::endl;
-}
+
 
 void testInterpolateThreeElementValues() {
 	glm::vec3 from(1.0, 4.0, 9.2);
@@ -362,52 +356,7 @@ void testInterpolateThreeElementValues() {
 	}
 }
 
-void drawTask2Test(DrawingWindow &window) {
-    
-    
-    // 计算中心点坐标
-    CanvasPoint center(WIDTH / 2, HEIGHT / 2); // (160, 120)
-    
-    // 定义一个颜色来绘制，比如红色 (R, G, B)
-    Colour testColour(255, 0, 0);
 
-    // --- 2. 绘制四条测试线 ---
-
-    // A) A line from the top-left corner to the centre
-    CanvasPoint topLeft(0, 0);
-    drawLine(window, topLeft, center, testColour);
-
-    // B) A line from the top-right corner to the centre
-    // 坐标是从0开始的，所以 top-right 是 (WIDTH - 1, 0)
-    CanvasPoint topRight(WIDTH - 1, 0); // (319, 0)
-    drawLine(window, topRight, center, testColour);
-
-    // C) A vertical line all the way down the middle
-    CanvasPoint middleTop(static_cast<float>(WIDTH) / 2, 0); // (160, 0)
-    CanvasPoint middleBottom(static_cast<float>(WIDTH) / 2, HEIGHT - 1); // (160, 239)
-    drawLine(window, middleTop, middleBottom, testColour);
-
-    // D) A horizontal line a third the width of the screen, centred
-    
-    int oneThirdWidth = WIDTH / 3; // 320 / 3 = 106 (使用整数除法)
-    
-    // 水平居中：从中心点向左和向右各移动 (1/3宽度 / 2)
-    int startX = center.x - (static_cast<float>(oneThirdWidth) / 2); // 160 - (106 / 2) = 160 - 53 = 107
-    int endX = center.x + (static_cast<float>(oneThirdWidth) / 2);   // 160 + (106 / 2) = 160 + 53 = 213
-    
-    // 垂直居中：Y 坐标就是中心点的 Y
-    int centerY = center.y; // 120
-
-    CanvasPoint horizontalStart(startX, centerY); // (107, 120)
-    CanvasPoint horizontalEnd(endX, centerY);   // (213, 120)
-    
-    drawLine(window, horizontalStart, horizontalEnd, testColour);
-}
-
-void test() {
-	testInterpolateSingleFloats();
-	testInterpolateThreeElementValues();
-}
 
 int main(int argc, char *argv[]) {
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
