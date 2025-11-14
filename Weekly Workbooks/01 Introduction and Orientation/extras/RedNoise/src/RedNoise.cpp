@@ -12,8 +12,9 @@
 #include <string>
 #include <vector>
 
-#define WIDTH 320
-#define HEIGHT 240
+#define COEFFICIENT 3.0f
+#define WIDTH 320 * COEFFICIENT
+#define HEIGHT 240 * COEFFICIENT
 std::vector<float> interpolateSingleFloats(float, float, int);
 std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 to, int numberOfSteps);
 void drawTask2Test(DrawingWindow &window);
@@ -31,7 +32,7 @@ CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 cameraPosition, float focalLe
 std::map<std::string, Colour> colours = loadMtl("assets/cornell-box.mtl");
 std::vector<ModelTriangle> cornellBox = loadObj("assets/cornell-box.obj", 0.35f, colours);
 glm::vec3 cameraPosition(0.0f, 0.0f, 4.0f);
-float focalLength = 2.0f; 
+float focalLength = 2.0f * COEFFICIENT; 
 float scaleFactor = 160.0f;
 std::vector<float> zBuffer(HEIGHT * WIDTH, 0.0f);
 
@@ -344,19 +345,6 @@ std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 t
 	}
 	return result;
 }
-
-
-
-void testInterpolateThreeElementValues() {
-	glm::vec3 from(1.0, 4.0, 9.2);
-	glm::vec3 to(4.0, 1.0, 9.8);
-	auto result = interpolateThreeElementValues(from, to, 4);
-	for (size_t i = 0; i < result.size(); i++) {
-		std::cout << (float)result[i].x << " " << (float)result[i].y << " " << (float)result[i].z << std::endl;
-	}
-}
-
-
 
 int main(int argc, char *argv[]) {
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
