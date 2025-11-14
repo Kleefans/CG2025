@@ -4,6 +4,8 @@
 #include "Colour.h"
 #include "ModelTriangle.h"
 #include "TextureMap.h"
+#include "FrameBuffer.h"
+#include "Camera.h"
 #include "glm/detail/type_vec.hpp"
 #include <Utils.h>
 #include <algorithm>
@@ -15,26 +17,24 @@
 #define COEFFICIENT 3.0f
 #define WIDTH 320 * COEFFICIENT
 #define HEIGHT 240 * COEFFICIENT
+
 std::vector<float> interpolateSingleFloats(float, float, int);
 std::vector<glm::vec3> interpolateThreeElementValues(glm::vec3 from, glm::vec3 to, int numberOfSteps);
 void drawTask2Test(DrawingWindow &window);
 void drawStrokedTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
 std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle);
-void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
-void drawFilledTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour colour);
+void drawFilledTriangleWorker(DrawingWindow &window, FrameBuffer &frameBuffer, CanvasTriangle triangle, Colour colour);
+void drawFilledTriangle(DrawingWindow &window, FrameBuffer &frameBuffer, CanvasTriangle triangle, Colour colour);
 void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture);
 std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours);
 std::map<std::string, Colour> loadMtl(const std::string& pathfile);
-CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 cameraPosition, float focalLength, glm::vec3 vertexPosition, float scaleFactor);
 
 
 std::map<std::string, Colour> colours = loadMtl("assets/cornell-box.mtl");
 std::vector<ModelTriangle> cornellBox = loadObj("assets/cornell-box.obj", 0.35f, colours);
-glm::vec3 cameraPosition(0.0f, 0.0f, 4.0f);
-float focalLength = 2.0f * COEFFICIENT; 
-float scaleFactor = 160.0f;
-std::vector<float> zBuffer(HEIGHT * WIDTH, 0.0f);
+Camera camera(glm::vec3(0.0f, 0.0f, 4.0f), 2.0f * COEFFICIENT, 160.0f, WIDTH, HEIGHT);
+FrameBuffer frameBuffer(WIDTH, HEIGHT);
 
 std::vector<ModelTriangle> loadObj(const std::string& pathfile, float scale, std::map<std::string, Colour>& colours){
 	std::vector<glm::vec3> vertices;
@@ -113,23 +113,18 @@ std::map<std::string, Colour> loadMtl(const std::string& pathfile){
 }
 
 void draw(DrawingWindow &window) {
-	window.clearPixels();
+    window.clearPixels();
+    frameBuffer.clearDepth();
 
-	for (int y = 0; y < HEIGHT; y++) {
-        for (int x = 0; x < WIDTH; x++) {
-            zBuffer[y * WIDTH + x] = 0.0f;
-        }
+    for (const ModelTriangle& triangle : cornellBox){
+        std::array<glm::vec3, 3> vertices = {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
+        CanvasPoint p0 = camera.project(vertices[0]);
+        CanvasPoint p1 = camera.project(vertices[1]);
+        CanvasPoint p2 = camera.project(vertices[2]);
+        CanvasTriangle canvasTriangle(p0, p1, p2);
+        drawFilledTriangle(window, frameBuffer, canvasTriangle, triangle.colour);
+        //drawStrokedTriangle(window, canvasTriangle, Colour(255, 255, 255));
     }
-
-	for (const ModelTriangle& triangle : cornellBox){
-		std::array<glm::vec3, 3> vertices = {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
-		CanvasPoint p0 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[0], scaleFactor);
-		CanvasPoint p1 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[1], scaleFactor);
-		CanvasPoint p2 = projectVertexOntoCanvasPoint(cameraPosition, focalLength, vertices[2], scaleFactor);
-		CanvasTriangle canvasTriangle(p0, p1, p2);
-		drawFilledTriangle(window, canvasTriangle, triangle.colour);
-		//drawStrokedTriangle(window, canvasTriangle, Colour(255, 255, 255));
-	}
 }     
 
 void drawLine (DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
@@ -154,11 +149,11 @@ void drawStrokedTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour 
 	drawLine(window, triangle.v2(), triangle.v0(), colour);
 }
 
-void drawFilledTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour colour){
-	std::vector<CanvasTriangle> subTriangles = divideTriangle(triangle);
-	for (auto subTriangle : subTriangles) {
-		drawFilledTriangleWorker(window, subTriangle, colour);
-	}
+void drawFilledTriangle(DrawingWindow &window, FrameBuffer &frameBuffer, CanvasTriangle triangle, Colour colour){
+    std::vector<CanvasTriangle> subTriangles = divideTriangle(triangle);
+    for (auto subTriangle : subTriangles) {
+        drawFilledTriangleWorker(window, frameBuffer, subTriangle, colour);
+    }
 }
 
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, const TextureMap& texture){
@@ -211,9 +206,9 @@ void drawTexturedTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, 
 	}
 }
 
-void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Colour colour){
-	CanvasPoint p1 = (triangle[1].x < triangle[2].x) ? triangle[1] : triangle[2];
-	CanvasPoint p2 = (triangle[1].x > triangle[2].x) ? triangle[1] : triangle[2];
+void drawFilledTriangleWorker(DrawingWindow &window, FrameBuffer &frameBuffer, CanvasTriangle triangle, Colour colour){
+    CanvasPoint p1 = (triangle[1].x < triangle[2].x) ? triangle[1] : triangle[2];
+    CanvasPoint p2 = (triangle[1].x > triangle[2].x) ? triangle[1] : triangle[2];
 
 	if (triangle.v1().y - triangle.v0().y == 0 || triangle.v2().y - triangle.v0().y == 0) {
         return; 
@@ -239,32 +234,18 @@ void drawFilledTriangleWorker(DrawingWindow &window, CanvasTriangle triangle, Co
             std::swap(depth1, depth2);
         }
 
-		for (int x = round(x1); x <= round(x2); x++) {
-			float t = 0.0f;
+        for (int x = round(x1); x <= round(x2); x++) {
+            float t = 0.0f;
             if (x2 - x1 != 0) { 
                 t = (x - x1) / (x2 - x1);
             }
-			float currentDepth = depth1 + t * (depth2 - depth1);
-        	if(currentDepth > zBuffer[x + y * WIDTH]){
-				zBuffer[x + y * WIDTH] = currentDepth;
-				uint32_t argb = (255 << 24) | (colour.red << 16) | (colour.green << 8) | colour.blue;
-				window.setPixelColour(x, y, argb);
-			}
-    	}
-	}
-}
-
-CanvasPoint projectVertexOntoCanvasPoint(glm::vec3 cameraPosition, float focalLength, glm::vec3 vertexPosition, float imageScaleFactor = 1){
-	glm::vec3 vertexRelativePosition = vertexPosition - cameraPosition;
-	float x = vertexRelativePosition.x;
-	float y = vertexRelativePosition.y;
-	float z = vertexRelativePosition.z;
-	
-	float u = -focalLength * (x / z) * imageScaleFactor + (WIDTH / 2.0f);
-	float v = focalLength * (y / z) * imageScaleFactor + (HEIGHT / 2.0f);
-	float zDepth = 1.0f/-z;
-
-	return CanvasPoint(round(u), round(v), zDepth);
+            float currentDepth = depth1 + t * (depth2 - depth1);
+            if(frameBuffer.testAndSetDepth(x, y, currentDepth)){
+                uint32_t argb = (255 << 24) | (colour.red << 16) | (colour.green << 8) | colour.blue;
+                window.setPixelColour(x, y, argb);
+            }
+        }
+    }
 }
 
 std::vector<CanvasTriangle> divideTriangle(const CanvasTriangle &triangle){
@@ -308,9 +289,9 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if (event.key.keysym.sym == SDLK_u) drawStrokedTriangle(window,
 			CanvasTriangle(CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT)),
 			Colour(rand() % 256, rand() % 256, rand() % 256));
-		else if (event.key.keysym.sym == SDLK_f) drawFilledTriangle(window,
-			CanvasTriangle(CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT)),
-			Colour(rand() % 256, rand() % 256, rand() % 256));
+        else if (event.key.keysym.sym == SDLK_f) drawFilledTriangle(window, frameBuffer,
+            CanvasTriangle(CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT), CanvasPoint(rand() % WIDTH, rand() % HEIGHT)),
+            Colour(rand() % 256, rand() % 256, rand() % 256));
 		else if (event.key.keysym.sym == SDLK_t) {
 			TextureMap texture("assets/texture.ppm");
 			CanvasPoint v0(160, 10);
